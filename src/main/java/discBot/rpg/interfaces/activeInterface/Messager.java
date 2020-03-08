@@ -1,4 +1,4 @@
-package discBot.rpg.interfaces;
+package discBot.rpg.interfaces.activeInterface;
 
 import discBot.rpg.Bot;
 

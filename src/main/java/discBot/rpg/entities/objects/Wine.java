@@ -1,4 +1,4 @@
-package discBot.rpg.entities;
+package discBot.rpg.entities.objects;
 
 public class Wine extends Object {
 	public Wine() {

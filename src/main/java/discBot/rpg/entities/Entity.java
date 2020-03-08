@@ -2,7 +2,7 @@ package discBot.rpg.entities;
 
 import discBot.rpg.map.Cell;
 
-public abstract class Entity {
+public abstract class Entity implements EntityInterface {
 	private int zPriority;
 	private String img;
 	private Cell container;

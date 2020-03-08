@@ -1,4 +1,4 @@
-package discBot.rpg.entities;
+package discBot.rpg.entities.objects;
 
 import discBot.rpg.entities.Entity;
 

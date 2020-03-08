@@ -10,7 +10,9 @@ import java.util.Random;
 import discBot.rpg.Bot;
 import discBot.rpg.Player;
 import discBot.rpg.entities.*;
-import discBot.rpg.interfaces.Messager;
+import discBot.rpg.entities.objects.Beer;
+import discBot.rpg.entities.objects.Wine;
+import discBot.rpg.interfaces.activeInterface.Messager;
 import net.dv8tion.jda.api.entities.User;
 
 public class World implements Messager {
@@ -94,11 +96,6 @@ public class World implements Messager {
 	@Override
 	public String getMessageAuthor() {
 		return "World";
-	}
-	
-	@Override
-	public String toString() {
-		return "";
 	}
 	
 	public static String stringCellTable(List<Cell> table) {

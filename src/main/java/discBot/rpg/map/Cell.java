@@ -60,9 +60,9 @@ public class Cell {
 		int _x = (int) coord.getX();
 		int _y = (int) coord.getY();
 		List<Cell> retour = new ArrayList<Cell>((int) (Math.pow((range * 2) + 1, 2)));
-		for(int i = -range + _x; i <= range + _x; i++) {
-			for(int j = -range + _y; j <= range + _y; j++) {
-				retour.add(world.getCell(i, j));
+		for(int i = -range + _y; i <= range + _y; i++) {
+			for(int j = -range + _x; j <= range + _x; j++) {
+				retour.add(world.getCell(j, i));
 			}
 		}
 		return retour;
