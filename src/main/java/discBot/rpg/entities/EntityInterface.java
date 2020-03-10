@@ -1,6 +1,7 @@
 package discBot.rpg.entities;
 
 import discBot.rpg.map.Cell;
+import net.dv8tion.jda.api.entities.MessageChannel;
 
 public interface EntityInterface {
 	
@@ -9,4 +10,6 @@ public interface EntityInterface {
 	public Cell getContainer();
 	
 	public String getCommonName();
+	
+	public MessageChannel getChannel();
 }

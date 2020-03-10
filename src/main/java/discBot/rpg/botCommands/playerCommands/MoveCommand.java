@@ -1,8 +1,10 @@
 package discBot.rpg.botCommands.playerCommands;
 
+import discordBot.exceptions.CommandException;
 import discBot.rpg.Bot;
 import discBot.rpg.Direction;
 import discBot.rpg.entities.PlayerEntity;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class MoveCommand extends PlayerCommand {
 	public MoveCommand() {
@@ -10,14 +12,16 @@ public class MoveCommand extends PlayerCommand {
 	}
 	
 	@Override
-	public void execute(PlayerEntity player, String[] param) {
+	public void execute(MessageReceivedEvent event) throws CommandException {
+		PlayerEntity player = getPlayer(event);
+		String[] param = getParams(event);
 		if(param.length < 2) {
-			Bot.getInstance().message("Move where ?");
+			Bot.message(event.getChannel(), "Move where ?");
 			return;
 		}
 		Direction direction = Direction.getDirectionFromKeyword(param[1]);
 		if(direction == null) {
-			Bot.getInstance().message("I didn't get where you wanna move.");
+			Bot.message(event.getChannel(), "I didn't get where you wanna move.");
 			return;
 		}
 		player.move(direction);

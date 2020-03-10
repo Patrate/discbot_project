@@ -13,27 +13,28 @@ import discBot.rpg.entities.*;
 import discBot.rpg.entities.objects.Beer;
 import discBot.rpg.entities.objects.Wine;
 import discBot.rpg.interfaces.activeInterface.Messager;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
 
 public class World implements Messager {
 	
-	private static World world = new World();
+	private static Map<MessageChannel, World> worlds = new HashMap<MessageChannel, World>();
+	
+	private final MessageChannel channel;
 	private Map<Point, Cell> map;
 	private Random random= new Random();
 	private Map<String, PlayerEntity> players;
 	
-	public static World getWorld() {
-		return world;
+	public static World getWorld(MessageChannel channel) {
+		return worlds.get(channel);
 	}
 	
-	public static void setWorld(World w) {
-		world = w;
-	}
-	
-	public World() {
+	public World(MessageChannel channel) {
+		this.channel = channel;
 		map = new HashMap<Point, Cell>(81);
 		generateWorld();
 		players = new HashMap<String, PlayerEntity>();
+		worlds.put(channel, this);
 	}
 	
 	private void generateWorld() {
@@ -59,6 +60,10 @@ public class World implements Messager {
 			default:
 				return;
 		}
+	}
+	
+	public MessageChannel getChannel() {
+		return channel;
 	}
 	
 	public PlayerEntity addPlayer(User user) {
@@ -114,6 +119,20 @@ public class World implements Messager {
 	}
 	
 	public void message(String message) {
-		Bot.message("World", message);
+		Bot.message(channel, "World", message);
+	}
+
+	@Override
+	public void setContainer(Cell cell) {
+	}
+
+	@Override
+	public Cell getContainer() {
+		return null;
+	}
+
+	@Override
+	public String getCommonName() {
+		return null;
 	}
 }

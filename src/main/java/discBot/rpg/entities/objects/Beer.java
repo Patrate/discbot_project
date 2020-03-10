@@ -13,11 +13,11 @@ public class Beer extends Object implements Takable, Usable {
 
 	@Override
 	public void use(User user) {
-		Bot.message(user.getCommonName(), "*Boit une bière*");
+		Bot.message(user.getChannel(), user.getCommonName(), "*Boit une bière*");
 	}
 
 	@Override
 	public void take(Taker taker) {
-		Bot.message(taker.getCommonName(), "*Prend une bière*");
+		Bot.message(taker.getChannel(), taker.getCommonName(), "*Prend une bière*");
 	}
 }

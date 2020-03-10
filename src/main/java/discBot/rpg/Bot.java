@@ -1,30 +1,18 @@
 package discBot.rpg;
 
-import java.lang.reflect.Modifier;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.lang.reflect.InvocationTargetException;
+import discordBot.AbstractBot;
+import discordBot.DiscordHelper;
+import discordBot.exceptions.CommandException;
+import discordBot.exceptions.CommandNotFoundException;
 
-import org.reflections.Reflections;
+import javax.security.auth.login.LoginException;
 
-import discBot.DiscordHelper;
-import discBot.rpg.botCommands.AbstractCommand;
-import discBot.rpg.botCommands.MasterCommand;
-import discBot.rpg.botCommands.playerCommands.PlayerCommand;
-import discBot.rpg.entities.PlayerEntity;
-import discBot.rpg.exceptions.CommandException;
-import discBot.rpg.exceptions.CommandNotFoundException;
-import discBot.rpg.map.World;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
-public class Bot extends ListenerAdapter {
+public class Bot extends AbstractBot {
 
-	// FIXME sauvegarder le channel en fonction de l'emplacement de la session de jeu noice
-	private MessageChannel currentChannel;
-	private final Map<String, AbstractCommand> commandList;
+	private MessageChannel lastChannel;
 	
 	private static Bot INSTANCE;
 	
@@ -32,89 +20,37 @@ public class Bot extends ListenerAdapter {
 		if(INSTANCE == null) {
 			try {
 				INSTANCE = new Bot();
-			} catch (InstantiationException | IllegalAccessException e) {
+			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException | LoginException e) {
 				System.err.println("Erreur initialisation du bot: " + e.getMessage());
 			}
 		}
 		return INSTANCE;
 	}
 	
-	private Bot() throws InstantiationException, IllegalAccessException {
-		commandList = new HashMap<String, AbstractCommand>();
-		Reflections reflections = new Reflections("discBot.rpg");
-		Set<Class<? extends AbstractCommand>> allCommands =
-				reflections.getSubTypesOf(AbstractCommand.class);
-		for(Class<? extends AbstractCommand> command:allCommands) {
-			if(Modifier.isAbstract(command.getModifiers())) {
-				continue;
-			}
-			AbstractCommand newCommand = command.newInstance();
-			commandList.put(newCommand.getName(), newCommand);
-		}
-		
+	private Bot() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, LoginException {
+		super("discBot.rpg");
 	};
+	
+	public static void errorMessage(MessageChannel channel, String message) {
+		//TODO formatage en rouge
+		message(channel, message);
+	}
+	
+	public static void message(MessageChannel channel, String message) {
+		channel.sendMessage(message).queue();
+	}
+	
+	public static void message(MessageChannel channel, String author, String message) {
+		message(channel, DiscordHelper.colorBlueHeading(author, message));
+	}
 
 	@Override
-	public void onMessageReceived(MessageReceivedEvent event) {
-		if (event.getAuthor().isBot()) {
-			return;
-		}
-		currentChannel = event.getChannel();
-		System.out.println("msg: " + event.getMessage().getContentRaw());
-		
-		String message = event.getMessage().getContentRaw();
-		if (!message.startsWith("!")) {
-			return;
-		}
-		message = message.substring(1);
-		String[] command = message.split(" ");
-		try {
-			executeCommand(command, event);
-		} catch (CommandNotFoundException e) {
-			Bot.errorMessage("Commande not found " + e.getMessage());
-		} catch (CommandException e) {
-			Bot.errorMessage(e.getMessage());
-		}
+	protected void commandNotFoundException(CommandNotFoundException e) {
+		Bot.errorMessage(lastChannel, "Commande not found " + e.getMessage());
 	}
-	
-	private void executeCommand(String[] message, MessageReceivedEvent event) throws CommandNotFoundException, CommandException {
-		AbstractCommand command = commandList.get(message[0]);
-		if(command == null) {
-			throw new CommandNotFoundException(message[0]);
-		}
-		if(command instanceof PlayerCommand) {
-			if(World.getWorld() == null) {
-				System.out.println("world is null");
-			}
-			User user = event.getAuthor();
-			PlayerEntity player = World.getWorld().addPlayer(user);
-			if(player == null) {
-				World.getWorld().message("Erreur lors de la récupération de " + user.getName() + ".");
-				return;
-			}
-			((PlayerCommand) command).execute(player, message);
-		} else if(command instanceof MasterCommand) {
-			command.execute(message);
-		}
-	}
-	
-	public static void errorMessage(String message) {
-		//TODO formatage en rouge
-		message(message);
-	}
-	
-	public static void message(String message) {
-		if(getInstance().currentChannel == null) {
-			return; // TODO Throw exception
-		}
-		getInstance().currentChannel.sendMessage(message).queue();
-	}
-	
-	public static void message(String author, String message) {
-		getInstance().message_(author, message);
-	}
-	
-	private void message_(String author, String message) {
-		message(DiscordHelper.colorBlueHeading(author, message));
+
+	@Override
+	protected void commandException(CommandException e) {
+		Bot.errorMessage(lastChannel, e.getMessage());
 	}
 }

@@ -25,9 +25,6 @@ dependencies {
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
     
-    // https://mvnrepository.com/artifact/org.reflections/reflections
-	compile group: 'org.reflections', name: 'reflections', version: '0.9.12'
-    
     
     compile 'net.dv8tion:JDA:4.1.1_110'
 }

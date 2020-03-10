@@ -1,6 +1,7 @@
 package discBot.rpg.entities;
 
 import discBot.rpg.map.Cell;
+import net.dv8tion.jda.api.entities.MessageChannel;
 
 public abstract class Entity implements EntityInterface {
 	private int zPriority;
@@ -33,5 +34,10 @@ public abstract class Entity implements EntityInterface {
 	
 	public String getCommonName() {
 		return commonName;
+	}
+
+	@Override
+	public MessageChannel getChannel() {
+		return getContainer().getWorld().getChannel();
 	}
 }
